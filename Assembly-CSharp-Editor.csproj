@@ -10,7 +10,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>
     </RootNamespace>
-    <ProjectGuid>{565EBA0A-EAF8-204E-9148-0DDCB7157DFF}</ProjectGuid>
+    <ProjectGuid>{8A9F409A-51D0-5410-46F3-A6E1A180044A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp-Editor</AssemblyName>
@@ -63,16 +63,16 @@
   <ItemGroup>
     <Compile Include="Assets\Editor\uGUITools.cs" />
     <Reference Include="UnityEditor.StandardEvents">
-      <HintPath>E:/My Game Projects/Flying Numbers/FN UP/Flying Numbers/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+      <HintPath>E:/My Game Projects/Flying Numbers/Flying Numbers UP/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>E:/My Game Projects/Flying Numbers/FN UP/Flying Numbers/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+      <HintPath>E:/My Game Projects/Flying Numbers/Flying Numbers UP/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>E:/My Game Projects/Flying Numbers/FN UP/Flying Numbers/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+      <HintPath>E:/My Game Projects/Flying Numbers/Flying Numbers UP/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>E:/My Game Projects/Flying Numbers/FN UP/Flying Numbers/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+      <HintPath>E:/My Game Projects/Flying Numbers/Flying Numbers UP/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>D:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
