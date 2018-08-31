@@ -10,10 +10,14 @@ public class GameManager : MonoBehaviour {
     [Space]
     public int scoreForEachClick;
     [HideInInspector]
-    public int runScoreAmount;
+    public int runScoreAmount;  
 
-    public delegate void RunStart();
-    public static event RunStart RunStartEvents;
+    [Space]
+    public Animator mainCanvasAnimator;
+
+
+    //public delegate void RunStart();
+    //public static event RunStart RunStartEvents;
 
     private void Start()
     {
@@ -24,6 +28,12 @@ public class GameManager : MonoBehaviour {
     {
         runScoreAmount += scoreForEachClick;
         runScoreText.text = runScoreAmount.ToString() + " $";
+    }
+
+    public void StartARun ()
+    {
+        mainCanvasAnimator.SetTrigger("StartGame");
+
     }
 
     public void RestartTheGame()

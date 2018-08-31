@@ -8,14 +8,14 @@ public class BalloonTimerCtrler : MonoBehaviour
     public GameObject endGameMenu;
 
     [Space, Header("Slider")]
-    public Scrollbar timerSlider;
+    public  Scrollbar timerSlider;
     public float sliderValueReduction;
     public float reductionWaitingTime;
     [Header("Slide Handle Section")]
     public Image sliderHandle;
     public Color defaultColor, dangerColor;
 
-    private void Start()
+    public void StartTimer()
     {
         timerSlider.size = 1;
         StartCoroutine("TimerReduction");
