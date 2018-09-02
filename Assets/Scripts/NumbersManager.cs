@@ -4,11 +4,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-
+[RequireComponent(typeof(GridLayoutGroup))]
 public class NumbersManager : MonoBehaviour
 {
+    #region variables
+    [Header("Table Settings:")]
     public int startingNumber;
-    public int tableCellsCount;
+    [Range(1, 20)]
+    public int startingTableSize;
+    [Range(1, 20)]
+    public int maxTableSize;
+    [Tooltip("Don't set it to 0!!")]
+    public int newCellInterval;
+
+    [Space]
+    public GameObject numbersBtnPrefab;
     public GameObject dollarEffect;
     [Space]
     public GameManager gameManager;
@@ -16,100 +26,119 @@ public class NumbersManager : MonoBehaviour
     public BalloonTimerCtrler balloonTimerCtrler;
     public float addedtimerAmount;
     [Space]
-    public Numbers[] number;
+    public List<Numbers> number;
     public Color[] textHintColor;
 
-    private List<int> Lnumbers = new List<int>();
-    private int lastClickedNumber;
-    private int iterationCounter = 1;
+
+    private GridLayoutGroup MygridLayoutGroup;
+    private int tableSize;
+    private List<int> Lnumbers;
+    private int numberToSelect;
+
+    private int iterationCounter = 0;
+    #endregion
 
     private void Start()
     {
-        lastClickedNumber = startingNumber - 1;
-        Lnumbers.Add(-1);
-        //number = new Numbers[12];
+        MygridLayoutGroup = gameObject.GetComponent<GridLayoutGroup>();
 
-        for (int i = 0; i < tableCellsCount; i++)
+        numberToSelect = startingNumber;
+        tableSize = startingTableSize;
+
+        number = new List<Numbers>();
+        Lnumbers = new List<int>();
+
+        if (tableSize > 12)
         {
-            //Debug.Log("Added child number: " + i);
-            number[i].numberGameObject = gameObject.transform.GetChild(i).gameObject;
+            MygridLayoutGroup.constraintCount = 4;
+        }
+    }
 
-            int randomNumber;
-            randomNumber = Random.Range(startingNumber, startingNumber + tableCellsCount);
+    public void PopulateTheTable()
+    {
+        //creating button objects
+        for (int i = 0; i < startingTableSize; i++)
+        {
+            CreateNewNumberGameObject(i);
+        }
+    }
 
-            while (Lnumbers.Contains(randomNumber))
-            {
-                randomNumber = Random.Range(startingNumber, startingNumber + tableCellsCount);
-            }
-            //Debug.Log("Final radom number is: " + randomNumber);
-            Lnumbers.Add(randomNumber);
+    private void CreateNewNumberGameObject(int i)
+    {
+        GameObject numberGameObject = Instantiate(numbersBtnPrefab, gameObject.transform);
+        numberGameObject.GetComponent<NumberGameObjectsManager>().buttonIndex = i;
 
-            number[i].digit = randomNumber;
-            number[i].numberGameObject.transform.GetComponentInChildren<TextMeshProUGUI>().text = randomNumber.ToString();
+        Numbers temp = new Numbers();
+        number.Add(temp);
 
-            ChangeNumbersColor(i);
+        number[i].numberGameObject = gameObject.transform.GetChild(i).gameObject;
+        AddNumberToObjects(i);
+    }
+
+    private void AddNumberToObjects(int i)
+    {
+        if (Lnumbers.Count == 0)
+        {
+            AddItemsToNumberList();
+            iterationCounter++;
         }
 
-        //Lnumbers.Sort();
-        //for (int i = 0; i < Lnumbers.Count; i++) Debug.Log(Lnumbers[i] + "\n");
+        int randomNumber = Random.Range(0, Lnumbers.Count);
 
-        //changing list contents to 1 to 12
-        Lnumbers.Clear();
-        for (int i = 0; i < tableCellsCount; i++)
+        number[i].digit = Lnumbers[randomNumber];
+        //number[i].digit = randomNumber + (startingNumber + (iterationCounter * tableSize));
+        number[i].numberGameObject.transform.GetComponentInChildren<TextMeshProUGUI>().text = number[i].digit.ToString();
+
+        ChangeNumbersColor(i);
+
+        Lnumbers.Remove(Lnumbers[randomNumber]);
+    }
+
+    private void AddItemsToNumberList()
+    {
+        //Debug.Log("adding new Items to list ...");
+        for (int i = startingNumber + (iterationCounter * startingTableSize); i < startingNumber + (iterationCounter * startingTableSize) + startingTableSize; i++)
         {
             Lnumbers.Add(i);
         }
 
-        //Lnumbers.Sort();
-        //for (int i = 0; i < Lnumbers.Count; i++) Debug.Log(Lnumbers[i] + "\n");
+        for (int i = 0; i < Lnumbers.Count; i++)
+        {
+            Debug.Log(i + " number: " + Lnumbers[i]);
+        }
     }
 
     public void CheckClickedNumber(int btnIndex)
     {
         //correct number selected
-        if (number[btnIndex].digit - 1 == lastClickedNumber)
+        if (number[btnIndex].digit == numberToSelect)
         {
-            lastClickedNumber++;
+            numberToSelect++;
+            AddNumberToObjects(btnIndex);
 
-            int randomNumber;
-            randomNumber = Random.Range(0, tableCellsCount);
-            while (!Lnumbers.Contains(randomNumber))
-            {
-                randomNumber = Random.Range(0, tableCellsCount);
-            }
-            //Debug.Log("random number is: " + randomNumber);
-
-            number[btnIndex].digit = randomNumber + (startingNumber + (iterationCounter * tableCellsCount));
-            number[btnIndex].numberGameObject.transform.GetComponentInChildren<TextMeshProUGUI>().text = number[btnIndex].digit.ToString();
-            ChangeNumbersColor(btnIndex);
-
-            #region scoringEffects
+            #region otherEffects
             //effects
             number[btnIndex].numberGameObject.GetComponent<Animator>().SetTrigger("ShowNewNo");
             dollarEffect.GetComponent<RectTransform>().position = number[btnIndex].numberGameObject.GetComponent<RectTransform>().position;
             dollarEffect.GetComponent<ParticleSystem>().Play();
-            #endregion
 
             //slider effects
             balloonTimerCtrler.timerSlider.size += addedtimerAmount;
 
             //giving score
             gameManager.SetRunScore();
+            #endregion
 
-            Lnumbers.Remove(randomNumber);
-            //filling the numbers list when it gets empty
-            if (Lnumbers.Count == 0)
+            //Adding a new cell to table
+            if (tableSize != maxTableSize && numberToSelect % newCellInterval == 0)
             {
-                //Debug.Log("Filling the number list");
-                iterationCounter++;
-                for (int i = 0; i < tableCellsCount; i++)
+                CreateNewNumberGameObject(tableSize);
+                tableSize++;
+                if(tableSize > 12)
                 {
-                    Lnumbers.Add(i);
+                    MygridLayoutGroup.constraintCount = 4;
                 }
-                //    for (int j = 0; j < Lnumbers.Count; j++)
-                //        Debug.Log(Lnumbers[j] + "\n");
             }
-
         }
         else
         {
