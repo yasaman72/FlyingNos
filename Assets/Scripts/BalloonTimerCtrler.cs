@@ -5,13 +5,13 @@ using UnityEngine.UI;
 
 public class BalloonTimerCtrler : MonoBehaviour
 {
-    public GameObject endGameMenu;
+    public GameManager gameManager;
 
     [Space, Header("Slider")]
     public  Scrollbar timerSlider;
     public float sliderValueReduction;
     public float reductionWaitingTime;
-    [Header("Slide Handle Section")]
+    [Header("Slide Handle")]
     public Image sliderHandle;
     public Color defaultColor, dangerColor;
 
@@ -41,10 +41,9 @@ public class BalloonTimerCtrler : MonoBehaviour
 
             if (timerSlider.size <= 0)
             {
-                sliderHandle.color = defaultColor;
                 timerSlider.GetComponent<Animator>().SetBool("DangerSign", false);
 
-                endGameMenu.SetActive(true);
+                gameManager.FinishedARun();
 
                 StopCoroutine("TimerReduction");
             }

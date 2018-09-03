@@ -9,6 +9,7 @@ public class NumbersManager : MonoBehaviour
 {
     #region variables
     [Header("Table Settings:")]
+    public GameObject numbersBtnPrefab;
     public int startingNumber;
     [Range(1, 20)]
     public int startingTableSize;
@@ -16,10 +17,15 @@ public class NumbersManager : MonoBehaviour
     public int maxTableSize;
     [Tooltip("Don't set it to 0!!")]
     public int newCellInterval;
+    [Space]
+    public int coinMinInterval;
+    public int coinMaxInterval;
 
     [Space]
-    public GameObject numbersBtnPrefab;
-    public GameObject dollarEffect;
+    public ObjectPooler objectPooler;
+    [Space]
+    public GameObject coinParticle;
+
     [Space]
     public GameManager gameManager;
     [Space]
@@ -35,12 +41,16 @@ public class NumbersManager : MonoBehaviour
     private List<int> Lnumbers;
     private int numberToSelect;
 
+    private int coinMakerChecker;
+
     private int iterationCounter = 0;
     #endregion
 
     private void Start()
     {
         MygridLayoutGroup = gameObject.GetComponent<GridLayoutGroup>();
+
+        coinMakerChecker = Random.Range(coinMinInterval, coinMaxInterval);
 
         numberToSelect = startingNumber;
         tableSize = startingTableSize;
@@ -90,8 +100,25 @@ public class NumbersManager : MonoBehaviour
         number[i].numberGameObject.transform.GetComponentInChildren<TextMeshProUGUI>().text = number[i].digit.ToString();
 
         ChangeNumbersColor(i);
+        AddCoinToObjects(i);
 
         Lnumbers.Remove(Lnumbers[randomNumber]);
+
+    }
+
+    private void AddCoinToObjects(int i)
+    {
+        if (coinMakerChecker <= 0)
+        {
+            number[i].hasCoinOnIt = true;
+            number[i].numberGameObject.GetComponent<NumberGameObjectsManager>().myCoinGameObject.SetActive(true);
+            coinMakerChecker = Random.Range(coinMinInterval, coinMaxInterval);
+        }
+        else
+        {
+            number[i].numberGameObject.GetComponent<NumberGameObjectsManager>().myCoinGameObject.SetActive(false);
+            coinMakerChecker--;
+        }
     }
 
     private void AddItemsToNumberList()
@@ -102,10 +129,10 @@ public class NumbersManager : MonoBehaviour
             Lnumbers.Add(i);
         }
 
-        for (int i = 0; i < Lnumbers.Count; i++)
-        {
-            Debug.Log(i + " number: " + Lnumbers[i]);
-        }
+        //for (int i = 0; i < Lnumbers.Count; i++)
+        //{
+        //    Debug.Log(i + " number: " + Lnumbers[i]);
+        //}
     }
 
     public void CheckClickedNumber(int btnIndex)
@@ -119,14 +146,26 @@ public class NumbersManager : MonoBehaviour
             #region otherEffects
             //effects
             number[btnIndex].numberGameObject.GetComponent<Animator>().SetTrigger("ShowNewNo");
-            dollarEffect.GetComponent<RectTransform>().position = number[btnIndex].numberGameObject.GetComponent<RectTransform>().position;
-            dollarEffect.GetComponent<ParticleSystem>().Play();
+
+            //create the click effect
+            GameObject ClickEffect = objectPooler.GetPooledObject();
+            if (ClickEffect != null)
+            {
+                ClickEffect.GetComponent<RectTransform>().position = number[btnIndex].numberGameObject.GetComponent<RectTransform>().position;
+                ClickEffect.SetActive(true);
+                ClickEffect.GetComponent<Animator>().SetTrigger("Clicked");
+            }
 
             //slider effects
             balloonTimerCtrler.timerSlider.size += addedtimerAmount;
 
-            //giving score
-            gameManager.SetRunScore();
+            //giving coin
+            if (number[btnIndex].hasCoinOnIt == true)
+            {
+                gameManager.SetRunCoin();
+                coinParticle.GetComponent<RectTransform>().position = number[btnIndex].numberGameObject.GetComponent<RectTransform>().position;
+                coinParticle.GetComponent<ParticleSystem>().Play();
+            }
             #endregion
 
             //Adding a new cell to table
@@ -134,7 +173,7 @@ public class NumbersManager : MonoBehaviour
             {
                 CreateNewNumberGameObject(tableSize);
                 tableSize++;
-                if(tableSize > 12)
+                if (tableSize > 12)
                 {
                     MygridLayoutGroup.constraintCount = 4;
                 }

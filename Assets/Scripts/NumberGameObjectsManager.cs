@@ -5,6 +5,7 @@ using UnityEngine;
 public class NumberGameObjectsManager : MonoBehaviour {
 
     public int buttonIndex;
+    public GameObject myCoinGameObject;
     private NumbersManager numbersManager;
 
     private void Start()
@@ -16,4 +17,6 @@ public class NumberGameObjectsManager : MonoBehaviour {
     {
         numbersManager.CheckClickedNumber(buttonIndex);
     }
+
+
 }
