@@ -39,7 +39,8 @@ public class NumbersManager : MonoBehaviour
     private GridLayoutGroup MygridLayoutGroup;
     private int tableSize;
     private List<int> Lnumbers;
-    private int numberToSelect;
+    [HideInInspector]
+    public int numberToSelect;
 
     private int coinMakerChecker;
 
