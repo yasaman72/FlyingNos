@@ -44,45 +44,58 @@ public class NumbersManager : MonoBehaviour
 
     private int coinMakerChecker;
 
-    private int iterationCounter = 0;
+    private int iterationCounter;
     #endregion
 
     private void Start()
     {
         MygridLayoutGroup = gameObject.GetComponent<GridLayoutGroup>();
+    }
 
+    public void PopulateTheTable()
+    {
         coinMakerChecker = Random.Range(coinMinInterval, coinMaxInterval);
-
         numberToSelect = startingNumber;
         tableSize = startingTableSize;
-
-        number = new List<Numbers>();
-        Lnumbers = new List<int>();
+        iterationCounter = 0;
 
         if (tableSize > 12)
         {
             MygridLayoutGroup.constraintCount = 4;
         }
-    }
 
-    public void PopulateTheTable()
-    {
+        Lnumbers = new List<int>();
+
+        for (int i = 0; i < number.Count; i++)
+        {
+            number[i].numberGameObject.SetActive(false);
+        }
+        number = new List<Numbers>();
+
+
         //creating button objects
         for (int i = 0; i < startingTableSize; i++)
         {
             CreateNewNumberGameObject(i);
         }
+
+        //deactivating unused game objects
+        for (int i = startingTableSize; i < maxTableSize; i++)
+        {
+            gameObject.transform.GetChild(i).gameObject.SetActive(false);
+        }
+
     }
 
     private void CreateNewNumberGameObject(int i)
     {
-        GameObject numberGameObject = Instantiate(numbersBtnPrefab, gameObject.transform);
-        numberGameObject.GetComponent<NumberGameObjectsManager>().buttonIndex = i;
-
         Numbers temp = new Numbers();
         number.Add(temp);
 
         number[i].numberGameObject = gameObject.transform.GetChild(i).gameObject;
+        number[i].numberGameObject.GetComponent<NumberGameObjectsManager>().buttonIndex = i;
+        number[i].numberGameObject.SetActive(true);
+
         AddNumberToObjects(i);
     }
 
