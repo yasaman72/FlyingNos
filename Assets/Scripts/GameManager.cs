@@ -98,4 +98,5 @@ public class GameManager : MonoBehaviour {
         if (PlayerPrefs.GetInt("PlayerCoins") < 0)
             PlayerPrefs.SetInt("PlayerCoins", 0);
     }
+
 }
