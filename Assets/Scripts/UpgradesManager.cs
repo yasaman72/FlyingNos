@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 [System.Serializable]
@@ -26,17 +27,22 @@ public class UpgradeObject
     [Space]
     public TextMeshProUGUI upgradeCostText, upgradeLevelText, upgradeBonusText;
 
+    [Header("visual items")]
+    public GameObject gameObject;
+
 }
 
 public class UpgradesManager : MonoBehaviour
 {
-
-
+    #region variables
     public NumbersManager numbersManager;
     public GameManager gameManager;
     public BalloonTimerCtrler balloonTimerCtrler;
+
     [Space]
     public List<UpgradeObject> upgrades;
+
+    #endregion
 
     private void Start()
     {
@@ -63,6 +69,7 @@ public class UpgradesManager : MonoBehaviour
 
             SetUpgradeEffects(i);
         }
+        CheckAvailableUpgrades();
     }
 
     public void NextLevelUpgrade(int i)
@@ -101,6 +108,7 @@ public class UpgradesManager : MonoBehaviour
 
             SetUpgradeEffects(i);
 
+            CheckAvailableUpgrades();
         }
     }
 
@@ -151,21 +159,39 @@ public class UpgradesManager : MonoBehaviour
                 break;
             case 1:
                 //offline reward
+                //change the following line of code
+                upgrades[i].upgradeBonusText.text = upgrades[i].currentLevel.ToString() + "/hr";
                 break;
             case 2:
                 //timer time
                 balloonTimerCtrler.sliderValueReduction -= upgrades[i].currentLevel * 0.0001f;
+                upgrades[i].upgradeBonusText.text = upgrades[i].currentLevel.ToString();
                 break;
             case 3:
                 //flying money
                 break;
             case 4:
                 //starting number
-                numbersManager.startingNumber = Mathf.CeilToInt(upgrades[i].currentLevel * upgrades[i].BonusMultiplier) - 1;
+                numbersManager.startingNumber = Mathf.CeilToInt(upgrades[i].currentLevel * upgrades[i].BonusMultiplier);
                 upgrades[i].upgradeBonusText.text = numbersManager.startingNumber.ToString();
                 break;
             default:
                 break;
+        }
+    }
+
+    public void CheckAvailableUpgrades()
+    {
+        for (int i = 0; i < upgrades.Count; i++)
+        {
+            if (upgrades[i].currentLevelCost <= PlayerPrefs.GetInt("PlayerCoins"))
+            {
+                upgrades[i].gameObject.GetComponent<Button>().interactable = true;
+            }
+            else
+            {
+                upgrades[i].gameObject.GetComponent<Button>().interactable = false;
+            }
         }
     }
 }

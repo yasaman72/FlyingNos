@@ -7,7 +7,16 @@ using TMPro;
 public class GameManager : MonoBehaviour {
 
     #region Variables
+    [Space]
     public NumbersManager numbersManager;
+    public UpgradesManager upgradesManager;
+    public GameObject groundGameObject;
+
+    public GameObject backgroundSky, foregroundSky;
+
+    [Space]
+    public GameObject[] activateTheseGameObjectsWhenStart;
+    public GameObject[] deactiveTheseGameObjectsWhenStart;
 
     [Space, Header("Coin System Variables")]
     public TextMeshProUGUI runCoinText;
@@ -24,17 +33,24 @@ public class GameManager : MonoBehaviour {
 
     private void Start()
     {
-        runCoinText.text = "0";
 
         if (PlayerPrefs.HasKey("PlayerCoins"))
         {
             playerCoinsText.text = PlayerPrefs.GetInt("PlayerCoins").ToString();
-            return;
         }
         else
         {
             PlayerPrefs.SetInt("PlayerCoins", 0);
             playerCoinsText.text = PlayerPrefs.GetInt("PlayerCoins").ToString();
+        }    
+        
+        for (int i = 0; i < activateTheseGameObjectsWhenStart.Length; i++)
+        {
+            activateTheseGameObjectsWhenStart[i].SetActive(true);
+        }
+        for (int i = 0; i < deactiveTheseGameObjectsWhenStart.Length; i++)
+        {
+            deactiveTheseGameObjectsWhenStart[i].SetActive(false);
         }
 
     }
@@ -47,7 +63,13 @@ public class GameManager : MonoBehaviour {
 
     public void StartARun ()
     {
+        runCoinText.text = "0";
+        runCoinAmount = 0;
+
         mainCanvasAnimator.SetTrigger("StartGame");
+
+        backgroundSky.SetActive(true);
+        foregroundSky.SetActive(true);
 
         //Counts rounds played
         if (PlayerPrefs.HasKey("RunCount"))
@@ -64,6 +86,10 @@ public class GameManager : MonoBehaviour {
 
     public void FinishedARun()
     {
+        backgroundSky.SetActive(false);
+        foregroundSky.SetActive(false);
+        groundGameObject.SetActive(true);
+
         //recording number of passed buttons
         if (PlayerPrefs.HasKey("BestPassed"))
         {
@@ -81,15 +107,13 @@ public class GameManager : MonoBehaviour {
 
         bettingController.EndGameBetResult(numbersManager.numberToSelect);
         AddCoinToPlayer(runCoinAmount);
+        upgradesManager.CheckAvailableUpgrades();
     }
 
     public void SetupGameAfterFinishingARun()
     {
         mainCanvasAnimator.SetTrigger("EndGame");
-
-
     }
-
 
     public void AddCoinToPlayer(int coinAmount)
     {

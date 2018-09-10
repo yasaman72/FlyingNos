@@ -6,9 +6,11 @@ public class gameStartAnimationEndEvent : MonoBehaviour {
 
 
     public BalloonTimerCtrler balloonTimerCtrler;
+    public GameObject groundGameObject;
 
     public void LetTheGameStarts()
     {
         balloonTimerCtrler.StartTimer();
+        groundGameObject.SetActive(false);
     }
 }
