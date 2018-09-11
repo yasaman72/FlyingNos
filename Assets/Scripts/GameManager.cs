@@ -11,8 +11,14 @@ public class GameManager : MonoBehaviour {
     public NumbersManager numbersManager;
     public UpgradesManager upgradesManager;
     public GameObject groundGameObject;
+    public TextMeshProUGUI bestScoreText;
+    public GameObject coinParticle;
 
     public GameObject backgroundSky, foregroundSky;
+
+    [Space]
+    public AudioSource gameManagerAudioSource;
+    public AudioClip balloonUpAudioClip;
 
     [Space]
     public GameObject[] activateTheseGameObjectsWhenStart;
@@ -42,8 +48,15 @@ public class GameManager : MonoBehaviour {
         {
             PlayerPrefs.SetInt("PlayerCoins", 0);
             playerCoinsText.text = PlayerPrefs.GetInt("PlayerCoins").ToString();
-        }    
-        
+        }
+
+        //showing best score
+        if (PlayerPrefs.HasKey("BestPassed"))
+        {
+            bestScoreText.text = PlayerPrefs.GetInt("BestPassed").ToString();
+        }
+
+
         for (int i = 0; i < activateTheseGameObjectsWhenStart.Length; i++)
         {
             activateTheseGameObjectsWhenStart[i].SetActive(true);
@@ -55,14 +68,30 @@ public class GameManager : MonoBehaviour {
 
     }
 
-    public void SetRunCoin()
+    public void SetRunCoin(Transform transform)
     {
         runCoinAmount += coinForEachClick;
         runCoinText.text = runCoinAmount.ToString();
+
+        coinParticle.GetComponent<RectTransform>().position = transform.GetComponent<RectTransform>().position;
+        coinParticle.GetComponent<ParticleSystem>().Play();
     }
+
+    public void SetRunCoin(int moneyToAdd, Transform transform)
+    {
+        runCoinAmount += moneyToAdd;
+        runCoinText.text = runCoinAmount.ToString();
+
+        coinParticle.GetComponent<RectTransform>().position = transform.GetComponent<RectTransform>().position;
+        coinParticle.GetComponent<ParticleSystem>().Play();
+    }
+
 
     public void StartARun ()
     {
+        gameManagerAudioSource.clip = balloonUpAudioClip;
+        gameManagerAudioSource.Play();
+
         runCoinText.text = "0";
         runCoinAmount = 0;
 
@@ -75,7 +104,7 @@ public class GameManager : MonoBehaviour {
         if (PlayerPrefs.HasKey("RunCount"))
         {
             PlayerPrefs.SetInt("RunCount", PlayerPrefs.GetInt("RunCount") + 1);
-            Debug.Log("Run Count: " + PlayerPrefs.GetInt("RunCount"));
+            //Debug.Log("Run Count: " + PlayerPrefs.GetInt("RunCount"));
         }
         else
         {
@@ -90,22 +119,26 @@ public class GameManager : MonoBehaviour {
         foregroundSky.SetActive(false);
         groundGameObject.SetActive(true);
 
+        numbersManager.clearTheTable();      
+
         //recording number of passed buttons
         if (PlayerPrefs.HasKey("BestPassed"))
         {
-            if (PlayerPrefs.GetInt("BestPassed") < (numbersManager.numberToSelect - numbersManager.startingNumber))
+            if (PlayerPrefs.GetInt("BestPassed") < (numbersManager.numberToSelect))
             {
-                PlayerPrefs.SetInt("BestPassed", numbersManager.numberToSelect - numbersManager.startingNumber);
+                PlayerPrefs.SetInt("BestPassed", numbersManager.numberToSelect);
+                bestScoreText.text = PlayerPrefs.GetInt("BestPassed").ToString();
             }
-                Debug.Log("Best Passed: " + PlayerPrefs.GetInt("BestPassed"));
+                //Debug.Log("Best Passed: " + PlayerPrefs.GetInt("BestPassed"));
+                bestScoreText.text = PlayerPrefs.GetInt("BestPassed").ToString();
         }
         else
         {
-            PlayerPrefs.SetInt("BestPassed", numbersManager.numberToSelect - numbersManager.startingNumber);
-            Debug.Log("Best Passed: " + PlayerPrefs.GetInt("BestPassed"));
+            PlayerPrefs.SetInt("BestPassed", numbersManager.numberToSelect);
+            //Debug.Log("Best Passed: " + PlayerPrefs.GetInt("BestPassed"));
         }
 
-        bettingController.EndGameBetResult(numbersManager.numberToSelect);
+        bettingController.EndGameBetResult(numbersManager.numberToSelect - 1);
         AddCoinToPlayer(runCoinAmount);
         upgradesManager.CheckAvailableUpgrades();
     }
@@ -120,7 +153,7 @@ public class GameManager : MonoBehaviour {
         PlayerPrefs.SetInt("PlayerCoins", PlayerPrefs.GetInt("PlayerCoins") + coinAmount);
         playerCoinsText.text = PlayerPrefs.GetInt("PlayerCoins").ToString();
         if (PlayerPrefs.GetInt("PlayerCoins") < 0)
-            PlayerPrefs.SetInt("PlayerCoins", 0);
+            PlayerPrefs.SetInt("PlayerCoins", 0);       
     }
 
 }

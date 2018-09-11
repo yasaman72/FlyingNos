@@ -63,14 +63,14 @@ public class BettingController : MonoBehaviour
     {
         gameManager.StartARun();
         acceptedTheBet = true;
-        Debug.Log("Accepted the bet! ;)");
+       // Debug.Log("Accepted the bet! ;)");
     }
 
     public void DeclineTheBet()
     {
         gameManager.StartARun();
         acceptedTheBet = false;
-        Debug.Log("Declined the bet! :(");
+       // Debug.Log("Declined the bet! :(");
     }
 
 
@@ -84,17 +84,23 @@ public class BettingController : MonoBehaviour
                 gameManager.AddCoinToPlayer((int)BetRewardAmount);
                 endRewardText.text = BetRewardAmount.ToString();
                 endGameWon.SetActive(true);
+                endGameLose.SetActive(false);
+
             }
             else
             {
                 gameManager.AddCoinToPlayer((int)BetPenaltyAmount);
                 endPenaltyText.text = BetPenaltyAmount.ToString();
                 endGameLose.SetActive(true);
+                endGameWon.SetActive(false);
+
             }
         }
         else
         {
             endGameMenu.SetActive(true);
+            betResultPopup.SetActive(false);
+
         }
     }
 }

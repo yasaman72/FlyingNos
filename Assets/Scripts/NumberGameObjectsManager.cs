@@ -8,6 +8,7 @@ public class NumberGameObjectsManager : MonoBehaviour {
     public GameObject myCoinGameObject;
     private NumbersManager numbersManager;
 
+
     private void Start()
     {
         numbersManager = GameObject.FindWithTag("NumberManager").GetComponent<NumbersManager>();

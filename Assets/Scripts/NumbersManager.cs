@@ -8,6 +8,8 @@ using TMPro;
 public class NumbersManager : MonoBehaviour
 {
     #region variables
+    public SkyElementsController skyElementsController;
+
     [Header("Table Settings:")]
     public GameObject numbersBtnPrefab;
     public int startingNumber;
@@ -17,6 +19,10 @@ public class NumbersManager : MonoBehaviour
     public int maxTableSize;
     [Tooltip("Don't set it to 0!!")]
     public int newCellInterval;
+    [Space]
+    public AudioSource numbersAudioSource;
+    public AudioClip rightNumberClickedAudio;
+    public AudioClip wrongNumberClicked;
     [Space]
     public int coinMinInterval;
     public int coinMaxInterval;
@@ -66,12 +72,7 @@ public class NumbersManager : MonoBehaviour
 
         Lnumbers = new List<int>();
 
-        for (int i = 0; i < number.Count; i++)
-        {
-            number[i].numberGameObject.SetActive(false);
-        }
-        number = new List<Numbers>();
-
+        clearTheTable();
 
         //creating button objects
         for (int i = 0; i < startingTableSize; i++)
@@ -154,6 +155,12 @@ public class NumbersManager : MonoBehaviour
         //correct number selected
         if (number[btnIndex].digit == numberToSelect)
         {
+            numbersAudioSource.clip = rightNumberClickedAudio;
+            numbersAudioSource.pitch = Random.Range(1f, 2f);
+            numbersAudioSource.Play();
+
+            skyElementsController.CheckAndReleaseFlyingMoney();
+
             numberToSelect++;
             AddNumberToObjects(btnIndex);
 
@@ -176,9 +183,7 @@ public class NumbersManager : MonoBehaviour
             //giving coin
             if (number[btnIndex].hasCoinOnIt == true)
             {
-                gameManager.SetRunCoin();
-                coinParticle.GetComponent<RectTransform>().position = number[btnIndex].numberGameObject.GetComponent<RectTransform>().position;
-                coinParticle.GetComponent<ParticleSystem>().Play();
+                gameManager.SetRunCoin(number[btnIndex].numberGameObject.transform);
             }
             #endregion
 
@@ -196,6 +201,10 @@ public class NumbersManager : MonoBehaviour
         else
         {
             number[btnIndex].numberGameObject.GetComponent<Animator>().SetTrigger("WrongNo");
+
+            numbersAudioSource.clip = wrongNumberClicked;
+            numbersAudioSource.pitch = Random.Range(1f, 1.5f);
+            numbersAudioSource.Play();
         }
     }
 
@@ -215,5 +224,15 @@ public class NumbersManager : MonoBehaviour
         number[numberIndex].numberGameObject.GetComponent<Image>().color = textHintColor[secondDigit];
     }
 
+    public void clearTheTable()
+    {
+        for (int i = 0; i < number.Count; i++)
+        {
+            number[i].numberGameObject.SetActive(false);
+        }
+        number = new List<Numbers>();
+    }
+
 }
+
 

@@ -38,6 +38,7 @@ public class UpgradesManager : MonoBehaviour
     public NumbersManager numbersManager;
     public GameManager gameManager;
     public BalloonTimerCtrler balloonTimerCtrler;
+    public SkyElementsController skyElementsController;
 
     [Space]
     public List<UpgradeObject> upgrades;
@@ -164,11 +165,14 @@ public class UpgradesManager : MonoBehaviour
                 break;
             case 2:
                 //timer time
-                balloonTimerCtrler.sliderValueReduction -= upgrades[i].currentLevel * 0.0001f;
+                balloonTimerCtrler.sliderValueReduction -= upgrades[i].currentBonus * 0.0001f;
                 upgrades[i].upgradeBonusText.text = upgrades[i].currentLevel.ToString();
                 break;
             case 3:
                 //flying money
+                skyElementsController.moneyFromFlyingNumber = Mathf.CeilToInt(upgrades[i].currentLevel * upgrades[i].BonusMultiplier);
+                upgrades[i].upgradeBonusText.text = skyElementsController.moneyFromFlyingNumber.ToString();
+
                 break;
             case 4:
                 //starting number
